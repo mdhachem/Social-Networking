@@ -1,0 +1,63 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Publication{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .review-rating {
+            color: red;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block body %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>User Id</th>
+                <th>contenu</th>
+                <th>Date de creation</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pub in publication %}
+            <tr>
+                <td>{{ pub.id }}</td>
+                <td>{{ pub.user.id }}</td>
+                <td>{{ pub.text }}</td>
+                <td>{{ pub.CreatedAt | date('d/m/Y') }}</td>
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

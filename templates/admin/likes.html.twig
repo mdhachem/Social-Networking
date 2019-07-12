@@ -1,0 +1,61 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Likes{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .review-rating {
+            color: red;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block body %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Post Id</th>
+                <th>User Id</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for like in likes %}
+            <tr>
+                <td>{{ like.id }}</td>
+                <td>{{ like.post.id }}</td>
+                <td>{{ like.user.id }}</td>
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

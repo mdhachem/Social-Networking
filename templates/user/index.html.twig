@@ -1,0 +1,71 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .review-rating {
+            color: red;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block body %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Username</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.nom }}</td>
+                <td>{{ user.prenom }}</td>
+                <td>{{ user.image }}</td>
+                <td>
+                    <a href="{{ path('user_show_admin', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('user_edit_admin', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary" href="{{ path('user_new') }}">Create new</a>
+{% endblock %}

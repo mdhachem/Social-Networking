@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+
+{% block contenu %}
+<br><br>
+<div class="row">
+<div class="col-sm-2"></div>
+<div class="col-sm-8">
+<article>
+<h4><a href="#"><img width="5%" src="/images/avatar6.png" alt="" class="img-fluid rounded-circle">
+        {{publication.user.username}}</a></h4>
+        <div class="content">
+            {{ publication.text }}
+        </div>
+        <small> Ecrit le {{ publication.createdAt | date('d/m/Y') }} a {{ publication.createdAt | date('H:i') }}</small>
+                <br>
+                        <a href="{{ path('post_like', {'id' : publication.id})}}" class="btn btn-link js-like">
+                        {% if  app.user and publication.isLikedByUser(app.user) %}
+                            <i class="fas fa-thumbs-up"></i>
+                        {% else %}
+                            <i class="far fa-thumbs-up"></i>
+                        {% endif %}
+                        <span class="js-likes">{{ publication.likes | length }}</span>
+                        <span class="js-label">j'aime</span>
+                        </a>
+    </article>
+
+    <section id="commentaires">
+    <hr>
+        <h5>{{ publication.comments | length }} Commentaires : </h5>
+        <hr>
+        {% for comment in publication.comments %}
+        <div class="comment">
+            <div class="row">
+                <div class="col-3">
+                <h4><a href="#"><img width="15%" src="http://bootdey.com/img/Content/avatar/avatar6.png" alt="" class="img-fluid rounded-circle">
+                    {{comment.user.username}}</a></h4>
+                    {{ comment.content | raw}}
+                    <br>
+                   <small> {{ comment.createdAt | date('d/m/Y a H:i') }}</small>
+                </div>
+                
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+        {% if app.user %}
+        {{ form_start(formComment) }}
+        {{ form_row(formComment.content, {'label' : ' ' , 'attr' : {  'placeholder':'Votre Commentaire'}}) }}
+        <button class="btn btn-success" type="submit">Commenter !</button>
+        {{ form_end(formComment) }}
+        {% else %}
+             <h2>Vous ne pouvez pas commenter si vous n'etes pas connecte</h2>
+            <a href="{{ path('security_login') }}" class="btn btn-primary">Connexion</a>
+        {% endif %}
+    </section>
+</div>
+<div class="col-sm-2"></div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="/dist/axios.min.js"></script>
+<script>
+
+    function onClickBtnLike(event){
+        event.preventDefault();
+
+        const url = this.href ;
+        const spanCount = this.querySelector('span.js-likes');
+        const icone = this.querySelector('i');
+
+        axios.get(url).then(function(reponse){
+            spanCount.textContent = reponse.data.likes;
+
+            if(icone.classList.contains('fas')){
+                icone.classList.replace('fas', 'far');
+            }else{
+                icone.classList.replace('far', 'fas');
+            }
+
+        }).catch(function(error){
+            if(error.response.status === 403){
+                window.alert("Vous ne pouvez pas liker un article si vous n'etes pas connecté ");
+            } else{
+                window.alert("Une error s'est produite, reessayer plus tard  ");
+            }
+        });
+    }
+
+    document.querySelectorAll('a.js-like').forEach(function(link){
+        link.addEventListener('click', onClickBtnLike)
+    })
+
+
+
+</script>
+ {% endblock %}
+

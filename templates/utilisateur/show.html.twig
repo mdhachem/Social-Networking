@@ -1,0 +1,281 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user.prenom }} {{ user.nom }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+
+/*
+Profile
+*/
+.si-border-round {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    border-radius: 50%;
+}
+
+.social-icon-sm {
+    margin: 0 5px 5px 0;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    line-height: 30px !important;
+    color: #555;
+    text-shadow: none;
+    border-radius: 3px;
+    overflow: hidden;
+    display: block;
+    float: left;
+    text-align: center;
+    border: 1px solid #AAA;
+}
+.tabs-admin > .nav-item > .nav-link.active {
+    border-color: #0073ff;
+    color: #0073ff;
+}
+
+.tabs-admin > .nav-item > .nav-link {
+    padding: 10px 15px;
+    color: #555;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-bottom: -2px;
+    border-bottom: 2px solid transparent;
+}
+.act-content span.text-small {
+    display: block;
+    color: #999;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.text-small {
+    font-size: 12px !important;
+}
+.admin-tab-content {
+    padding: 10px 15px;
+}
+
+.pt30 {
+    padding-top: 30px !important;
+}
+.card .card-title {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    min-height: 28px;
+    margin: 0;
+    font-size: .9rem;
+    font-weight: 600;
+    line-height: 28px;
+}
+
+.mb20 {
+    margin-bottom: 20px !important;
+}
+.pb20 {
+    padding-bottom: 20px !important;
+}
+
+.pt20 {
+    padding-top: 20px !important;
+}
+.text-small {
+    font-size: 12px !important;
+}
+
+.text-muted {
+    color: #999 !important;
+}
+.card .card-content {
+    padding: 15px 15px;
+}
+.profile-header {
+  background-size: cover;
+  position: relative;
+  overflow: hidden; }
+  .profile-header .img-fluid.rounded-circle {
+    max-width: 100px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    display: block; }
+
+.activity-list > li {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 20px; }
+
+.activity-list .float-left {
+  margin-right: 10px;
+  width: 40px;
+  height: 40px;
+  float: left;
+  display: block;
+  border-radius: 50%;
+  background-color: #eee;
+  font-size: 20px;
+  line-height: 100%;
+  line-height: 43px;
+  text-align: center; }
+  .activity-list .float-left a {
+    display: inline-block;
+    color: #999; }
+
+.act-content {
+  overflow: hidden; }
+  .act-content span.text-small {
+    display: block;
+    color: #999;
+    margin-bottom: 10px;
+    font-size: 12px; }
+</style>
+
+{% endblock %}
+
+{% block contenu %}
+<br>
+ <div class="row">
+        <div class="col-md-4 mb30">
+            <div class="card">
+
+                <div class="card-content pt20 pb20 profile-header">
+                    <img src="/images/avatar6.png" alt="" class="img-fluid rounded-circle">
+                    <h4 class="card-title text-center mb20">{{ user.prenom }} {{ user.nom }}</h4>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-4 mb20">
+                            <h5>{{ user.follows | length }}</h5>
+                            <h6 class="text-small text-muted">Followers</h6>
+                        </div>
+                        <div class="col-md-4 mb20">
+                            <h5>{{ user.publications | length }}</h5>
+                            <h6 class="text-small text-muted">Posts</h6>
+                        </div>
+                    </div>
+                    <a href="{{ path('follow', {'id' : user.id })}}" class="btn btn-link js-follow">
+                        {% if  app.user and app.user.isFollowByUser(user) %}
+                            <span id="change" class="btn btn-danger"><i class="fab fa-foursquare"></i> UnFollow</span>
+                        {% else %}
+                            <span id="change" class="btn btn-success"><i class="fab fa-foursquare"></i> Follow</span>
+                        {% endif %}
+                    </a>
+                    {% if  app.user == user %}
+                        <a href="{{ path('user_edit',{ 'id' : user.id }) }}" class="btn btn-primary btn-rounded">Edit Profile</a>
+                    {% endif %}
+                    
+                </div>
+                <!--content-->
+
+            </div>
+        </div>
+        <div class="col-md-8 mb30">
+            <div class="card" style="border: none;">
+                <div>
+                    {% if  app.user == user %}
+                    {{ form_start(publicationForm)}}
+                        {{ form_row(publicationForm.text,{ 'label' : ' ' , 'attr' : {  'placeholder':'What\'s on your mind?  ...'}}) }}
+                        <button class="btn btn-success" type="submit">Publier</button>
+                    {{ form_end(publicationForm)}}
+                    {% endif %}
+                    {% for article in user.publications|reverse  %}
+                        <hr>       
+                        <article>
+                            <h4><a href="{{ path('user_show',{ 'id' : article.user.id }) }}"><img width="5%" src="/images/avatar6.png" alt="" class="img-fluid rounded-circle">
+                            {{article.user.username}}</a></h4>
+                            <div class="content">
+                                {{article.text}}<br>
+                                <small>{{ article.createdAt | date('d/m/Y') }} a {{ article.createdAt | date('H:i') }}</small>
+                            <!-- <a href="{{ path('publication_show' , { 'id' : article.id }) }}" class="btn btn-primary">lire la suite</a> -->
+                            <br>
+                                <a href="{{ path('publication_show' , { 'id' : article.id }) }}">Commentaire</a>
+
+                                            <a href="{{ path('post_like', {'id' : article.id})}}" class="btn btn-link js-like">
+                                            {% if  app.user and article.isLikedByUser(app.user) %}
+                                                <i class="fas fa-thumbs-up"></i>
+                                            {% else %}
+                                                <i class="far fa-thumbs-up"></i>
+                                            {% endif %}
+                                            <span class="js-likes">{{ article.likes | length }}</span>
+                                            <span class="js-label">j'aime</span>
+                                            </a>
+                            </div>
+                        </article><br><br>
+
+                    {% endfor %}
+
+
+                </div>  
+        </div>
+    </div>
+
+   
+{% endblock %}
+
+{% block javascripts %}
+<script src="/dist/axios.min.js"></script>
+<script>
+
+    function onClickBtnLike(event){
+        event.preventDefault();
+
+        const url = this.href ;
+        const spanCount = this.querySelector('span.js-likes');
+        const icone = this.querySelector('i');
+
+        axios.get(url).then(function(reponse){
+            spanCount.textContent = reponse.data.likes;
+
+            if(icone.classList.contains('fas')){
+                icone.classList.replace('fas', 'far');
+            }else{
+                icone.classList.replace('far', 'fas');
+            }
+
+        }).catch(function(error){
+            if(error.response.status === 403){
+                window.alert("Vous ne pouvez pas liker un article si vous n'etes pas connecté ");
+            } else{
+                window.alert("Une error s'est produite, reessayer plus tard  ");
+            }
+        });
+    }
+
+    document.querySelectorAll('a.js-like').forEach(function(link){
+        link.addEventListener('click', onClickBtnLike)
+    })
+
+
+    function onClickBtnFollow(event){
+        event.preventDefault();
+
+        const url = this.href ;
+        const icone = this.querySelector('span');
+
+        axios.get(url).then(function(reponse){
+
+            if(icone.classList.contains('btn-danger')){
+                icone.classList.replace('btn-danger', 'btn-success');
+                document.getElementById('change').innerHTML='<i class="fab fa-foursquare"></i> Follow';
+            }else{
+                icone.classList.replace('btn-success', 'btn-danger');
+                document.getElementById('change').innerHTML='<i class="fab fa-foursquare"></i> UnFollow';
+            }
+
+        }).catch(function(error){
+            if(error.response.status === 403){
+                window.alert("error ");
+            } else{
+                window.alert("Une error s'est produite, reessayer plus tard  ");
+            }
+        });
+    }
+
+    document.querySelectorAll('a.js-follow').forEach(function(link){
+        link.addEventListener('click', onClickBtnFollow)
+    })
+
+
+
+</script>
+ {% endblock %}

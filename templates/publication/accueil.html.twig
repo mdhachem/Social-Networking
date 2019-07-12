@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<h1>Avec GreenSpace, partagez et restez en contact avec votre entourage.</h1>
+<a href="{{ path('security_login') }}" class="btn btn-primary">Connexion</a>
+<a href="{{ path('security_registration') }}" class="btn btn-success">inscription</a>
+{% endblock %}
+
+{% block contenu %}
+
+<div class="row">
+<div class="col-sm-2"></div>
+<div class="col-sm-8">
+
+        {{ form_start(publicationForm)}}
+            {{ form_row(publicationForm.text,{ 'label' : ' ' , 'attr' : {  'placeholder':'What\'s on your mind?  ...'}}) }}
+            <button class="btn btn-success" type="submit">Publier</button>
+        {{ form_end(publicationForm)}}
+<br><br>
+<section class="articles">
+
+    {% for article in articles %}
+
+     <hr>       
+    <article>
+        <h4><a href="{{ path('user_show',{ 'id' : article.user.id }) }}"><img width="5%" src="/images/avatar6.png" alt="" class="img-fluid rounded-circle">
+        {{article.user.username}}</a></h4>
+        <div class="content">
+            {{article.text}}<br>
+            <small>{{ article.createdAt | date('d/m/Y') }} a {{ article.createdAt | date('H:i') }}</small>
+           <!-- <a href="{{ path('publication_show' , { 'id' : article.id }) }}" class="btn btn-primary">lire la suite</a> -->
+           <br>
+            <a href="{{ path('publication_show' , { 'id' : article.id }) }}">Commentaire</a>
+
+                        <a href="{{ path('post_like', {'id' : article.id})}}" class="btn btn-link js-like">
+                        {% if  app.user and article.isLikedByUser(app.user) %}
+                            <i class="fas fa-thumbs-up"></i>
+                        {% else %}
+                            <i class="far fa-thumbs-up"></i>
+                        {% endif %}
+                        <span class="js-likes">{{ article.likes | length }}</span>
+                        <span class="js-label">j'aime</span>
+                        </a>
+        </div>
+    </article><br><br>
+    
+    {% endfor %}
+</section>
+</div>
+<div class="col-sm-2"></div>
+</div>
+
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+<script src="/dist/axios.min.js"></script>
+<script>
+
+    function onClickBtnLike(event){
+        event.preventDefault();
+
+        const url = this.href ;
+        const spanCount = this.querySelector('span.js-likes');
+        const icone = this.querySelector('i');
+
+        axios.get(url).then(function(reponse){
+            spanCount.textContent = reponse.data.likes;
+
+            if(icone.classList.contains('fas')){
+                icone.classList.replace('fas', 'far');
+            }else{
+                icone.classList.replace('far', 'fas');
+            }
+
+        }).catch(function(error){
+            if(error.response.status === 403){
+                window.alert("Vous ne pouvez pas liker un article si vous n'etes pas connecté ");
+            } else{
+                window.alert("Une error s'est produite, reessayer plus tard  ");
+            }
+        });
+    }
+
+    document.querySelectorAll('a.js-like').forEach(function(link){
+        link.addEventListener('click', onClickBtnLike)
+    })
+
+
+
+</script>
+ {% endblock %}

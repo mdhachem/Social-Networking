@@ -1,0 +1,64 @@
+{% extends 'base-admin.html.twig' %}
+
+{% block title %}Messages{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .review-rating {
+            color: red;
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block body %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Emitter User Id</th>
+                <th>Receivere User Id</th>
+                <th>message</th>
+                <th>Date de creation</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for msg in message %}
+            <tr>
+                <td>{{ msg.id }}</td>
+                <td>{{ msg.emitter.id }}</td>
+                <td>{{ msg.receivere.id }}</td>
+                <td>{{ msg.message }}</td>
+                <td>{{ msg.CreatedAt | date('d/m/Y') }}</td>
+
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

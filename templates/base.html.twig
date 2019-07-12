@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="stylesheet" href="https://bootswatch.com/4/lumen/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <a class="navbar-brand" href="{{ path('accueil') }}">Green Space</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+                  
+                    <div class="collapse navbar-collapse" id="navbarColor01">
+                      <ul class="navbar-nav mr-auto">
+                        {% if not app.user %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('security_login')}}">Connexion</a>
+                          </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('security_registration')}}">Inscription</a>
+                          </li>
+
+                        {% else %}
+
+                          <li class="nav-item active">
+                            <a class="nav-link" href="{{ path('accueil') }}">Accueil <span class="sr-only">(current)</span></a>
+                          </li>
+
+                          <li class="nav-item">
+                            <a class="nav-link" href="{{ path('message') }}">Messages</a>
+                          </li>
+
+                          <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="{{ path('user_show',{ 'id' : app.user.id }) }}">Profile</a>
+                          </li>
+              
+                          <li class="nav-item">
+                            <a class="nav-link" href="{{ path('security_logout')}}">  Déconnexion</a>
+                          </li>
+                      </ul>
+
+                      <form action="/search" class="form-inline my-2 my-lg-0">
+                            <input name="q" class="form-control mr-sm-2" type="text" placeholder="Chercher">
+                            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Chercher</button>
+                          </form>
+                      {% endif %}
+                    </div>
+                  </nav>
+                  <div class="container">
+                        {% if not app.user %}
+                        {% block body %}{% endblock %}
+                        {% else %}
+                        {% block contenu %}{% endblock %}
+                        {% endif %}
+                  </div>
+        
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

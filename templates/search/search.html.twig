@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block contenu %}
+<br><br>
+<div class="row">
+<div class="col-sm-2"></div>
+<div class="col-sm-8">
+    
+        {% if res is empty %}
+            <h3>n'existe pas</h3>
+        {% endif %}
+
+        {% for result in res %}
+        <hr>
+        <div class="user">
+            <div class="row">
+                <div class="col-8">
+                <h5><a href="{{ path('user_show',{ 'id' : result.id }) }}"><img width="10%" src="/images/avatar6.png" alt="" class="img-fluid rounded-circle">
+                 <span>{{result.prenom}}  {{ result.nom }} </span>  </a></h5>
+                </div>
+                <div class="col-4">
+                <a href="{{ path('follow', {'id' : result.id })}}" class="btn btn-link js-follow">
+                        {% if  app.user and app.user.isFollowByUser(result) %}
+                            <span id="change" class="btn btn-danger"><i class="fab fa-foursquare"></i> UnFollow</span>
+                        {% else %}
+                            <span id="change" class="btn btn-success"><i class="fab fa-foursquare"></i> Follow</span>
+                        {% endif %}
+                        </a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        {% endfor %}
+
+
+</div>
+<div class="col-sm-2"></div>
+</div>
+
+
+
+
+
+{% endblock %}
+
+
+{% block javascripts %}
+<script src="/dist/axios.min.js"></script>
+<script>
+
+    function onClickBtnLike(event){
+        event.preventDefault();
+
+        const url = this.href ;
+        const icone = this.querySelector('span');
+
+        axios.get(url).then(function(reponse){
+
+            if(icone.classList.contains('btn-danger')){
+                icone.classList.replace('btn-danger', 'btn-success');
+                document.getElementById('change').innerHTML='<i class="fab fa-foursquare"></i> Follow';
+            }else{
+                icone.classList.replace('btn-success', 'btn-danger');
+                document.getElementById('change').innerHTML='<i class="fab fa-foursquare"></i> UnFollow';
+            }
+
+        }).catch(function(error){
+            if(error.response.status === 403){
+                window.alert("error ");
+            } else{
+                window.alert("Une error s'est produite, reessayer plus tard  ");
+            }
+        });
+    }
+
+    document.querySelectorAll('a.js-follow').forEach(function(link){
+        link.addEventListener('click', onClickBtnLike)
+    })
+
+
+
+</script>
+ {% endblock %}
